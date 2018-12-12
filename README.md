@@ -1,4 +1,4 @@
-![logo](./assets/flysorter-logo.png)
+![logo](./assets/defaultLogo.png)
 # ***Back End Repository***
 - If you're looking for the front end respository, click [HERE](https://github.com/fncreative/FlySorter-front-end)
 # Build Status
