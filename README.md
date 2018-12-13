@@ -1,13 +1,11 @@
 ![logo](./assets/defaultLogo.png)
 # ***Back End Repository***
-- If you're looking for the front end respository, click [HERE](https://github.com/fncreative/FlySorter-front-end)
+- If you're looking for the front end repository, click [HERE]((https://github.com/lets-go-geronimo/readyIMS-front-end))
 # Build Status
+In development.
+
 # Description
-- An inventory management application for the Seattle-based company Fly-Sorter. Fly Sorter builds
-machines to sort fruit flies so they can be used for scientific research. This application keeps track of those machine assemblies, sub-assemblies, and the parts that belong to those
-sub assemblies. These components are displayed on the page and allows the user to click
-on a sub-assembly to reveal the parts that makeup that sub-assembly.
-The table also allows the user to filter parts and search for a part in order to make finding particular parts faster and easier for the user.
+A universal inventory application for for small to mid sized businesses.
 
 # Languages, Technologies, Frameworks, & Libraries Used (backend)
 
@@ -44,11 +42,8 @@ the application...
 4. Turn on the database by executing the ```npm run dbOn``` command in your terminal.
 5. Start the test suite by executing the ```npm run test``` command in your terminal.
 
-
-![ERD](assets/ERD.png)
-
 ___
-***Authors: [Benjamin West](https://github.com/bgwest) | | [Daniel Frey](https://github.com/fncreative) | | [Tom North](https://github.com/tnorth93) | | [Wyatt Pefley](https://github.com/peffles)***
+***Current collaborators: [Benjamin West](https://github.com/bgwest) | | [Tom North](https://github.com/tnorth93) | | [Jason Hiskey](https://github.com/jlhiskey)***
 ____
 
 
