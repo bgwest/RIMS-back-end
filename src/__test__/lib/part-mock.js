@@ -4,7 +4,6 @@ const faker = require('faker');
 const subAssemblyMock = require('./subAssemblyMock');
 const Part = require('../../model/part');
 
-
 const partMock = module.exports = {};
 
 partMock.pCreatePartMock = () => {

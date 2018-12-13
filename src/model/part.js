@@ -50,7 +50,6 @@ const partSchema = mongoose.Schema({
   //        the customer.
   subIDRef: {
     type: String,
-    required: true,
   },
   // TOM: This connects the parts to the subAssembly
   subAssembly: {
@@ -63,7 +62,7 @@ function partPreHook(done) {
   return SubAssembly.findById(this.subAssembly)
     .then((subAssemblyFound) => {
       if (!subAssemblyFound) {
-        throw new HttpError(404, 'No existing subAssembly');
+        return true;
       }
       subAssemblyFound.parts.push(this._id);
       return subAssemblyFound.save();
@@ -90,4 +89,32 @@ const partPostHook = (document, done) => {
 partSchema.pre('save', partPreHook);
 partSchema.post('remove', partPostHook);
 
-module.exports = mongoose.model('part', partSchema);
+const Part = module.exports = mongoose.model('part', partSchema);
+
+Part.create = (
+  partId,
+  partDescription,
+  partSub,
+  partSrc,
+  partMfgNum,
+  partPrice,
+  partCategory,
+  partLocation,
+  partCount,
+  partLongLead,
+  partNotes,
+) => {
+  return new Part({
+    partId,
+    partDescription,
+    partSub,
+    partSrc,
+    partMfgNum,
+    partPrice,
+    partCategory,
+    partLocation,
+    partCount,
+    partLongLead,
+    partNotes,
+  }).save();
+};
