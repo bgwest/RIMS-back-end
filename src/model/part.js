@@ -56,7 +56,6 @@ const partSchema = mongoose.Schema({
   // TOM: This connects the parts to the subAssembly
   subAssembly: {
     type: mongoose.Schema.Types.ObjectId,
-    required: true,
     ref: 'subAssembly',
   },
 });
