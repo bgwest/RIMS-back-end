@@ -1,5 +1,5 @@
 {
-  "name": "flysorter-back-end",
+  "name": "rims-back-end",
   "version": "1.0.0",
   "description": "BOM inventory manager back-end",
   "main": "src/app.js",
@@ -22,15 +22,10 @@
     ]
   },
   "repository": {
-    "type": "git",
-    "url": "git+https://github.com/fncreative/FlySorter-back-end.git"
+    "type": "git"
   },
-  "author": "Daniel Frey, Tom North, Wyatt Pefley, Benjamin West",
+  "author": "",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/fncreative/FlySorter-back-end/issues"
-  },
-  "homepage": "https://github.com/fncreative/FlySorter-back-end#readme",
   "dependencies": {
     "bcrypt": "^3.0.2",
     "body-parser": "^1.18.3",
