@@ -16,7 +16,6 @@ router.post('/parts', jsonParser, (request, response, next) => {
     logger.log(logger.INFO, '400 | invalid request');
     return response.sendStatus(400);
   }
-  // TOM: testing standalone part creation ==================================
   if (!request.body.subId) {
     return Part.create(request.body)
       .then((part) => {
@@ -25,7 +24,6 @@ router.post('/parts', jsonParser, (request, response, next) => {
       })
       .catch(next);
   }
-  // ==========================================================================
   return new Part(request.body).save()
     .then((part) => {
       logger.log(logger.INFO, 'Responding with a 200 status code');
