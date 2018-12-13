@@ -6,7 +6,7 @@ const SubAssembly = require('./sub-assembly');
 
 const partSchema = mongoose.Schema({
   partId: {
-    type: Number,
+    type: String,
     unique: true,
     required: true,
   },
