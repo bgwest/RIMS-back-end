@@ -62,7 +62,7 @@ function partPreHook(done) {
   return SubAssembly.findById(this.subAssembly)
     .then((subAssemblyFound) => {
       if (!subAssemblyFound) {
-        throw new HttpError(404, 'No existing subAssembly');
+        return console.log('no subassembly found, create standalone part');
       }
       subAssemblyFound.parts.push(this._id);
       return subAssemblyFound.save();
