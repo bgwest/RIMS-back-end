@@ -89,4 +89,32 @@ const partPostHook = (document, done) => {
 partSchema.pre('save', partPreHook);
 partSchema.post('remove', partPostHook);
 
-module.exports = mongoose.model('part', partSchema);
+const Part = module.exports = mongoose.model('part', partSchema);
+
+Part.create = (
+  partId,
+  partDescription,
+  partSub,
+  partSrc,
+  partMfgNum,
+  partPrice,
+  partCategory,
+  partLocation,
+  partCount,
+  partLongLead,
+  partNotes,
+) => {
+  return new Part({
+    partId,
+    partDescription,
+    partSub,
+    partSrc,
+    partMfgNum,
+    partPrice,
+    partCategory,
+    partLocation,
+    partCount,
+    partLongLead,
+    partNotes,
+  }).save();
+};
