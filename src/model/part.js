@@ -9,7 +9,6 @@ const partSchema = mongoose.Schema({
     type: Number,
     unique: true,
     required: true,
-    min: [100000, 'Id must be a unique integer starting from 100000'],
   },
   partDescription: {
     type: String,

@@ -6,7 +6,7 @@ http -a username00:password localhost:3000/login
 
 echo '{"subId":"2","subPart":"password","subVersion":"question","subQuantity":"answer","subMinutes":"ok"}' | http http://localhost:3000/subassemblies
 
-echo '{"partId":"1","partDescription":"password","partSub":"false","partSrc":"answer","partMfgNum":"ok","partPrice":"buhbyeee","partCategory":"nahhhhhh","partLocation":"cya","partCount":"bye","partLongLead":"false","partNotes":"wee","subAssembly":"5beb4e81541a6a1c27e1fc27"}' | http http://localhost:3000/parts
+echo '{"partId":"17","partDescription":"password","partSub":"false","partSrc":"answer","partMfgNum":"ok","partPrice":"buhbyeee","partCategory":"nahhhhhh","partLocation":"cya","partCount":"bye","partLongLead":"false","partNotes":"wee"}' | http http://localhost:3000/parts
 
 
 
