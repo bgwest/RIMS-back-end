@@ -26,8 +26,8 @@ partMock.pCreatePartMock = () => {
         partCount: Math.random().toString(),
         partLongLead: false,
         partNotes: faker.lorem.words(3),
-        subAssembly: createdSubAssemblyMock._id,
-        subIDRef: faker.lorem.words(1),
+        // subAssembly: createdSubAssemblyMock._id,
+        // subIDRef: faker.lorem.words(1),
       }).save();
     })
     .then((createdPartMock) => {

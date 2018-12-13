@@ -50,7 +50,6 @@ const partSchema = mongoose.Schema({
   //        the customer.
   subIDRef: {
     type: String,
-    required: true,
   },
   // TOM: This connects the parts to the subAssembly
   subAssembly: {
