@@ -11,7 +11,7 @@ const loggerMiddleware = require('./logger-middleware');
 const errorMiddleware = require('./error-middleware');
 const subAssemblyRouter = require('../routes/subAssembly-routes');
 const partRouter = require('../routes/part-routes');
-const sendSubAssyRoutes = require('../routes/sendSubAssyRouter');
+const sendSubAssyRoutes = require('../routes/subAssembly-query');
 const partQuery = require('../routes/part-query');
 
 const app = express();
@@ -19,6 +19,9 @@ const app = express();
 app.use(cors({
   credential: true,
 }));
+
+app.use(multer({ dest: '../../uploads/' })
+  .single('photo'));
 
 app.use(authRouter);
 app.use(accountRouter);
@@ -36,8 +39,6 @@ app.all('*', (request, response) => {
   logger.log(logger.INFO, '404 - catch-all/default routes (routes was not found)');
   return response.sendStatus(404);
 });
-app.use(multer({ dest: '../../uploads/' })
-  .single('photo'));
 
 const server = module.exports = {};
 let internalServer = null;
