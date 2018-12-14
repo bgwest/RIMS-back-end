@@ -44,8 +44,10 @@
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jest": "^21.22.0",
     "faker": "^4.1.0",
+    "fs": "0.0.1-security",
     "jest": "^23.6.0",
     "logger": "0.0.1",
+    "multer": "^1.4.1",
     "superagent": "^4.0.0-beta.5"
   }
 }

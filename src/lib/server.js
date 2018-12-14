@@ -3,6 +3,7 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const multer = require('multer');
 const authRouter = require('../routes/authRouter');
 const accountRouter = require('../routes/accountRoutes');
 const logger = require('./logger');
@@ -17,6 +18,13 @@ const app = express();
 
 app.use(cors({
   credential: true,
+}));
+
+app.use(multer({
+  dest: '../../uploads/',
+  rename(fieldName, fileName) {
+    return fileName;
+  },
 }));
 
 app.use(authRouter);
