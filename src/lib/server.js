@@ -3,6 +3,7 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const multer = require('multer');
 const authRouter = require('../routes/authRouter');
 const accountRouter = require('../routes/accountRoutes');
 const logger = require('./logger');
@@ -10,8 +11,9 @@ const loggerMiddleware = require('./logger-middleware');
 const errorMiddleware = require('./error-middleware');
 const subAssemblyRouter = require('../routes/subAssembly-routes');
 const partRouter = require('../routes/part-routes');
-const sendSubAssyRoutes = require('../routes/sendSubAssyRouter');
+const sendSubAssyRoutes = require('../routes/subAssembly-query');
 const partQuery = require('../routes/part-query');
+const logoUploadRoute = require('../routes/logoUploadRoute');
 
 const app = express();
 
@@ -19,12 +21,16 @@ app.use(cors({
   credential: true,
 }));
 
+app.use(multer({ dest: '../../uploads/' })
+  .single('photo'));
+
 app.use(authRouter);
 app.use(accountRouter);
 app.use(subAssemblyRouter);
 app.use(sendSubAssyRoutes);
 app.use(partRouter);
 app.use(partQuery);
+app.use(logoUploadRoute);
 
 // GLOBAL MIDDLEWARE
 
