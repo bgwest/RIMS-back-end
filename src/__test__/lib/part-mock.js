@@ -4,7 +4,6 @@ const faker = require('faker');
 const subAssemblyMock = require('./subAssemblyMock');
 const Part = require('../../model/part');
 
-
 const partMock = module.exports = {};
 
 partMock.pCreatePartMock = () => {
@@ -15,7 +14,7 @@ partMock.pCreatePartMock = () => {
       resultMock.subAssembly = createdSubAssemblyMock;
 
       return new Part({
-        partId: Math.random().toString(),
+        partId: (Math.random() * 100000).toString(),
         partDescription: faker.lorem.words(5),
         partSub: true,
         partSrc: faker.lorem.words(2),

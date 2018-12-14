@@ -6,10 +6,9 @@ const SubAssembly = require('./sub-assembly');
 
 const partSchema = mongoose.Schema({
   partId: {
-    type: Number,
+    type: String,
     unique: true,
     required: true,
-    min: [100000, 'Id must be a unique integer starting from 100000'],
   },
   partDescription: {
     type: String,
@@ -51,12 +50,10 @@ const partSchema = mongoose.Schema({
   //        the customer.
   subIDRef: {
     type: String,
-    required: true,
   },
   // TOM: This connects the parts to the subAssembly
   subAssembly: {
     type: mongoose.Schema.Types.ObjectId,
-    required: true,
     ref: 'subAssembly',
   },
 });
@@ -65,7 +62,7 @@ function partPreHook(done) {
   return SubAssembly.findById(this.subAssembly)
     .then((subAssemblyFound) => {
       if (!subAssemblyFound) {
-        throw new HttpError(404, 'No existing subAssembly');
+        return true;
       }
       subAssemblyFound.parts.push(this._id);
       return subAssemblyFound.save();
@@ -92,4 +89,32 @@ const partPostHook = (document, done) => {
 partSchema.pre('save', partPreHook);
 partSchema.post('remove', partPostHook);
 
-module.exports = mongoose.model('part', partSchema);
+const Part = module.exports = mongoose.model('part', partSchema);
+
+Part.create = (
+  partId,
+  partDescription,
+  partSub,
+  partSrc,
+  partMfgNum,
+  partPrice,
+  partCategory,
+  partLocation,
+  partCount,
+  partLongLead,
+  partNotes,
+) => {
+  return new Part({
+    partId,
+    partDescription,
+    partSub,
+    partSrc,
+    partMfgNum,
+    partPrice,
+    partCategory,
+    partLocation,
+    partCount,
+    partLongLead,
+    partNotes,
+  }).save();
+};
