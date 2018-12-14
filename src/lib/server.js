@@ -20,13 +20,6 @@ app.use(cors({
   credential: true,
 }));
 
-app.use(multer({
-  dest: '../../uploads/',
-  rename(fieldName, fileName) {
-    return fileName;
-  },
-}));
-
 app.use(authRouter);
 app.use(accountRouter);
 app.use(subAssemblyRouter);
@@ -43,6 +36,8 @@ app.all('*', (request, response) => {
   logger.log(logger.INFO, '404 - catch-all/default routes (routes was not found)');
   return response.sendStatus(404);
 });
+app.use(multer({ dest: '../../uploads/' })
+  .single('photo'));
 
 const server = module.exports = {};
 let internalServer = null;
