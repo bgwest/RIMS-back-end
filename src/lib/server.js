@@ -21,9 +21,6 @@ app.use(cors({
   credential: true,
 }));
 
-app.use(multer({ dest: '../../uploads/' })
-  .single('photo'));
-
 app.use(authRouter);
 app.use(accountRouter);
 app.use(subAssemblyRouter);

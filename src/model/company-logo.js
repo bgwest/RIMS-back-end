@@ -9,7 +9,7 @@ const companyLogoSchema = mongoose.Schema({
   },
 });
 
-const CompanyLogo = mongoose.model('companyLogo', companyLogoSchema);
+const CompanyLogo = module.exports = mongoose.model('companyLogo', companyLogoSchema);
 
 CompanyLogo.create = (data, contentType) => {
   return new CompanyLogo({ data, contentType }).save();
