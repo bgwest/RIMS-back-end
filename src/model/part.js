@@ -52,10 +52,15 @@ const partSchema = mongoose.Schema({
     type: String,
   },
   // TOM: This connects the parts to the subAssembly
-  subAssembly: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'subAssembly',
-  },
+  subAssembly: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'subAssembly',
+    },
+  ],
+},
+{
+  usePushEach: true,
 });
 
 function partPreHook(done) {

@@ -8,7 +8,7 @@ const subAssemblyMock = require('./lib/subAssemblyMock');
 
 const API_URL = `http://localhost:${process.env.PORT}`;
 
-describe('Testing part routes', () => {
+describe('Testing subassembly routes', () => {
   beforeAll(server.start);
   afterAll(server.stop);
 
@@ -36,12 +36,6 @@ describe('Testing part routes', () => {
     return partMock.pCreatePartMock()
       .then((response) => {
         expect(response.part).toBeTruthy();
-      });
-  });
-  test('Should return a response for a successful GET request', () => {
-    return superagent.get(`${API_URL}/subassemblies`)
-      .then((response) => {
-        expect(response).toBeTruthy();
       });
   });
 });

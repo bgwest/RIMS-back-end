@@ -1,10 +1,7 @@
 'use strict';
 
-const superagent = require('superagent');
 const partMock = require('./lib/part-mock');
 const server = require('../lib/server');
-
-const API_URL = `http://localhost:${process.env.PORT}`;
 
 describe('Testing part routes', () => {
   beforeAll(server.start);
@@ -21,12 +18,6 @@ describe('Testing part routes', () => {
     return partMock.pCreatePartMock()
       .then((response) => {
         expect(response.part).toBeTruthy();
-      });
-  });
-  test('Should return a response for a successful GET request', () => {
-    return superagent.get(`${API_URL}/parts`)
-      .then((response) => {
-        expect(response).toBeTruthy();
       });
   });
 });
