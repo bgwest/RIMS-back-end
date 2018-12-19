@@ -1,6 +1,9 @@
 # ignore load testing
 load_testing/
 
+# ignore upload image dir
+uploads/
+
 # do not store images in github
 src/lib/assets/picture-storage/
 

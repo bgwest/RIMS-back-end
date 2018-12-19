@@ -3,14 +3,28 @@
 const mongoose = require('mongoose');
 
 const companyLogoSchema = mongoose.Schema({
-  img: {
-    data: Buffer,
-    contentType: String,
+  buffer: {
+    type: Buffer,
+    required: true,
+  },
+  mimetype: {
+    type: String,
+    required: true,
+  },
+  originalname: {
+    type: String,
+    required: true,
+  },
+  encoding: {
+    type: String,
+    required: true,
   },
 });
 
 const CompanyLogo = module.exports = mongoose.model('companyLogo', companyLogoSchema);
 
-CompanyLogo.create = (data, contentType) => {
-  return new CompanyLogo({ data, contentType }).save();
+CompanyLogo.create = (buffer, mimetype, originalname, encoding) => {
+  return new CompanyLogo({
+    buffer, mimetype, originalname, encoding,
+  }).save();
 };
