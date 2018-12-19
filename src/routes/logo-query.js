@@ -16,7 +16,7 @@ const runLogoQuery = (callback) => {
       return error;
     }
     if (data) {
-      // convert accessCodes into iterable array
+      // convert into iterable array
       return callback(Object.values(data));
     }
   });
