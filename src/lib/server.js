@@ -14,6 +14,7 @@ const partRouter = require('../routes/part-routes');
 const sendSubAssyRoutes = require('../routes/subAssembly-query');
 const partQuery = require('../routes/part-query');
 const logoUploadRoute = require('../routes/logoUploadRoute');
+const logoQuery = require('../routes/logo-query');
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use(sendSubAssyRoutes);
 app.use(partRouter);
 app.use(partQuery);
 app.use(logoUploadRoute);
+app.use(logoQuery);
 
 // GLOBAL MIDDLEWARE
 
