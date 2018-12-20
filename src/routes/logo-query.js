@@ -32,7 +32,9 @@ router.get('/company-logo', jsonParser, (request, response, next) => { //eslint-
       } // else
       return undefined;
     });
-    return response.json({ imageToReturn });
+    // we can render base64 strings as <img> tags in React :)
+    const convertToBase64 = Buffer.from(imageToReturn[0].buffer).toString('base64');
+    return response.json({ base64: convertToBase64 });
   });
   // needs additional error handling but commit this base query for now
 });
