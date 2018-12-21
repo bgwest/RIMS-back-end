@@ -27,12 +27,14 @@ router.get('/company-logo', jsonParser, (request, response, next) => { //eslint-
   // return all logos in db
   let query = runLogoQuery((callback, error) => { //eslint-disable-line
     const imageToReturn = callback.filter((image) => {
-      if (image.originalname === 'company-logo.jpg' || image.originalname === 'company-logo.jpeg' || image.originalname === 'company-logo.png') {
+      if (image.originalname === 'company-logo') {
         return image;
       } // else
       return undefined;
     });
-    return response.json({ imageToReturn });
+    // we can render base64 strings as <img> tags in React :)
+    const convertToBase64 = Buffer.from(imageToReturn[0].buffer).toString('base64');
+    return response.json({ base64: convertToBase64 });
   });
   // needs additional error handling but commit this base query for now
 });
