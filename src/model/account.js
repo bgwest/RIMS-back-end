@@ -41,9 +41,18 @@ function pCreateToken() {
   this.tokenSeed = crypto.randomBytes(TOKEN_SEED_LENGTH).toString('hex');
   return this.save()
     .then((account) => {
-      return jsonWebToken.sign({
-        tokenSeed: account.tokenSeed,
+      const handOff = {};
+      handOff.tokenSeed = account.tokenSeed;
+      handOff.isAdmin = account.isAdmin;
+      return handOff;
+    })
+    .then((parsedAccount) => {
+      const objectToSend = {};
+      objectToSend.tokenSeed = jsonWebToken.sign({
+        tokenSeed: parsedAccount.tokenSeed,
       }, process.env.APP_SECRET);
+      objectToSend.isAdmin = parsedAccount.isAdmin;
+      return objectToSend;
     })
     .catch((error) => {
       throw error;
