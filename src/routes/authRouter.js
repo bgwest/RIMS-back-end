@@ -46,9 +46,13 @@ router.get('/login', basicAuthMiddleware, (request, response, next) => {
     return next(new HttpError(401, 'AUTH | invalid request'));
   }
   return request.account.pCreateToken()
-    .then((token) => {
+    .then((toReturn) => {
+      console.log('toReturn:');
+      console.log(toReturn);
+      const token = toReturn.tokenSeed;
+      const isAdmin = toReturn.isAdmin; // eslint-disable-line prefer-destructuring
       logger.log(logger.INFO, 'Responding with a 200 status code and a TOKEN');
-      return response.json({ token });
+      return response.json({ token, isAdmin });
     })
     .catch(next);
 });
