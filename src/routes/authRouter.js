@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const HttpError = require('http-errors');
 
 const basicAuthMiddleware = require('../lib/basicAuthMiddleware');
+const bearerAuthMiddleware = require('../lib/bearerAuthMiddleware');
 const Account = require('../model/account');
 const logger = require('../lib/logger');
 
@@ -47,8 +48,23 @@ router.get('/login', basicAuthMiddleware, (request, response, next) => {
   }
   return request.account.pCreateToken()
     .then((toReturn) => {
-      console.log('toReturn:');
-      console.log(toReturn);
+      const token = toReturn.tokenSeed;
+      const isAdmin = toReturn.isAdmin; // eslint-disable-line prefer-destructuring
+      logger.log(logger.INFO, 'Responding with a 200 status code and a TOKEN');
+      return response.json({ token, isAdmin });
+    })
+    .catch(next);
+});
+
+// ==================================================================
+// token auth
+// ==================================================================
+router.get('/token-auth', bearerAuthMiddleware, (request, response, next) => {
+  if (!request.account) {
+    return next(new HttpError(401, 'AUTH | invalid request'));
+  }
+  return request.account.pCreateToken()
+    .then((toReturn) => {
       const token = toReturn.tokenSeed;
       const isAdmin = toReturn.isAdmin; // eslint-disable-line prefer-destructuring
       logger.log(logger.INFO, 'Responding with a 200 status code and a TOKEN');

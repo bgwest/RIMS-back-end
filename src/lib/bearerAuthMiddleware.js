@@ -16,6 +16,9 @@ const promisify = curryFunction => (...args) => {
 };
 
 module.exports = (request, response, next) => {
+  // uncomment for debugging
+  // console.log('BACK-END REQUEST');
+  // console.log(request.headers);
   if (!request.headers.authorization) {
     return next(new HttpError(400, 'AUTH | invalid request'));
   }
