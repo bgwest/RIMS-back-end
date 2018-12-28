@@ -43,6 +43,8 @@ function pCreateToken() {
     .then((account) => {
       const handOff = {};
       handOff.tokenSeed = account.tokenSeed;
+      handOff.username = account.username;
+      handOff.recoveryQuestion = account.recoveryQuestion;
       handOff.isAdmin = account.isAdmin;
       return handOff;
     })
@@ -51,6 +53,8 @@ function pCreateToken() {
       objectToSend.tokenSeed = jsonWebToken.sign({
         tokenSeed: parsedAccount.tokenSeed,
       }, process.env.APP_SECRET);
+      objectToSend.username = parsedAccount.username;
+      objectToSend.recoveryQuestion = parsedAccount.recoveryQuestion;
       objectToSend.isAdmin = parsedAccount.isAdmin;
       return objectToSend;
     })
