@@ -89,7 +89,7 @@ function getRecoveryHash(recoveryHash) {
   return recoveryHash;
 }
 
-Account.create = (username, password, recoveryQuestion, recoveryAnswer, isAdmin = false) => {
+Account.create = (username, password, recoveryQuestion, recoveryAnswer, isAdmin) => {
   const recoveryHash = hashRecovery(recoveryAnswer, getRecoveryHash);
   return bcrypt.hash(password, HASH_ROUNDS)
     .then((passwordHash) => {
