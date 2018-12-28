@@ -32,9 +32,13 @@ router.post('/signup', jsonParser, (request, response, next) => {
       logger.log(logger.INFO, 'AUTH | creating TOKEN');
       return account.pCreateToken();
     })
-    .then((token) => {
-      logger.log(logger.INFO, 'AUTH | returning a 200 code and a token');
-      return response.json({ token });
+    .then((toReturn) => {
+      const token = toReturn.tokenSeed;
+      const { username, recoveryQuestion, isAdmin } = toReturn;
+      logger.log(logger.INFO, 'Responding with a 200 status code and a TOKEN');
+      return response.json({
+        token, username, recoveryQuestion, isAdmin,
+      });
     })
     .catch(next);
 });
@@ -49,9 +53,11 @@ router.get('/login', basicAuthMiddleware, (request, response, next) => {
   return request.account.pCreateToken()
     .then((toReturn) => {
       const token = toReturn.tokenSeed;
-      const isAdmin = toReturn.isAdmin; // eslint-disable-line prefer-destructuring
+      const { username, recoveryQuestion, isAdmin } = toReturn;
       logger.log(logger.INFO, 'Responding with a 200 status code and a TOKEN');
-      return response.json({ token, isAdmin });
+      return response.json({
+        token, username, recoveryQuestion, isAdmin,
+      });
     })
     .catch(next);
 });
@@ -66,9 +72,11 @@ router.get('/token-auth', bearerAuthMiddleware, (request, response, next) => {
   return request.account.pCreateToken()
     .then((toReturn) => {
       const token = toReturn.tokenSeed;
-      const isAdmin = toReturn.isAdmin; // eslint-disable-line prefer-destructuring
+      const { username, recoveryQuestion, isAdmin } = toReturn;
       logger.log(logger.INFO, 'Responding with a 200 status code and a TOKEN');
-      return response.json({ token, isAdmin });
+      return response.json({
+        token, username, recoveryQuestion, isAdmin,
+      });
     })
     .catch(next);
 });
