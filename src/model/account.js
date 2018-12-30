@@ -41,9 +41,22 @@ function pCreateToken() {
   this.tokenSeed = crypto.randomBytes(TOKEN_SEED_LENGTH).toString('hex');
   return this.save()
     .then((account) => {
-      return jsonWebToken.sign({
-        tokenSeed: account.tokenSeed,
+      const handOff = {};
+      handOff.tokenSeed = account.tokenSeed;
+      handOff.username = account.username;
+      handOff.recoveryQuestion = account.recoveryQuestion;
+      handOff.isAdmin = account.isAdmin;
+      return handOff;
+    })
+    .then((parsedAccount) => {
+      const objectToSend = {};
+      objectToSend.tokenSeed = jsonWebToken.sign({
+        tokenSeed: parsedAccount.tokenSeed,
       }, process.env.APP_SECRET);
+      objectToSend.username = parsedAccount.username;
+      objectToSend.recoveryQuestion = parsedAccount.recoveryQuestion;
+      objectToSend.isAdmin = parsedAccount.isAdmin;
+      return objectToSend;
     })
     .catch((error) => {
       throw error;
@@ -76,7 +89,7 @@ function getRecoveryHash(recoveryHash) {
   return recoveryHash;
 }
 
-Account.create = (username, password, recoveryQuestion, recoveryAnswer, isAdmin = false) => {
+Account.create = (username, password, recoveryQuestion, recoveryAnswer, isAdmin) => {
   const recoveryHash = hashRecovery(recoveryAnswer, getRecoveryHash);
   return bcrypt.hash(password, HASH_ROUNDS)
     .then((passwordHash) => {

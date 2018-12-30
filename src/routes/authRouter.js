@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const HttpError = require('http-errors');
 
 const basicAuthMiddleware = require('../lib/basicAuthMiddleware');
+const bearerAuthMiddleware = require('../lib/bearerAuthMiddleware');
 const Account = require('../model/account');
 const logger = require('../lib/logger');
 
@@ -31,9 +32,13 @@ router.post('/signup', jsonParser, (request, response, next) => {
       logger.log(logger.INFO, 'AUTH | creating TOKEN');
       return account.pCreateToken();
     })
-    .then((token) => {
-      logger.log(logger.INFO, 'AUTH | returning a 200 code and a token');
-      return response.json({ token });
+    .then((toReturn) => {
+      const token = toReturn.tokenSeed;
+      const { username, recoveryQuestion, isAdmin } = toReturn;
+      logger.log(logger.INFO, 'Responding with a 200 status code and a TOKEN');
+      return response.json({
+        token, username, recoveryQuestion, isAdmin,
+      });
     })
     .catch(next);
 });
@@ -46,9 +51,32 @@ router.get('/login', basicAuthMiddleware, (request, response, next) => {
     return next(new HttpError(401, 'AUTH | invalid request'));
   }
   return request.account.pCreateToken()
-    .then((token) => {
+    .then((toReturn) => {
+      const token = toReturn.tokenSeed;
+      const { username, recoveryQuestion, isAdmin } = toReturn;
       logger.log(logger.INFO, 'Responding with a 200 status code and a TOKEN');
-      return response.json({ token });
+      return response.json({
+        token, username, recoveryQuestion, isAdmin,
+      });
+    })
+    .catch(next);
+});
+
+// ==================================================================
+// token auth
+// ==================================================================
+router.get('/token-auth', bearerAuthMiddleware, (request, response, next) => {
+  if (!request.account) {
+    return next(new HttpError(401, 'AUTH | invalid request'));
+  }
+  return request.account.pCreateToken()
+    .then((toReturn) => {
+      const token = toReturn.tokenSeed;
+      const { username, recoveryQuestion, isAdmin } = toReturn;
+      logger.log(logger.INFO, 'Responding with a 200 status code and a TOKEN');
+      return response.json({
+        token, username, recoveryQuestion, isAdmin,
+      });
     })
     .catch(next);
 });
