@@ -1,5 +1,5 @@
 ![logo](./assets/defaultLogo.png)
-# ***Back End Repository***
+# ***Back-end Repository***
 If you're looking for the front-end repository, click [here](https://github.com/bgwest/RIMS-front-end).
 # Build Status
 In development.
