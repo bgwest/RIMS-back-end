@@ -6,7 +6,7 @@ const locationSchema = mongoose.Schema({
   // !Tom - adding the required line in case we want to make location required later
   // !Tom - locationName is how the customer would name their locations, not necessarily
   //        how they are sorted under the hood. Still figuring out how to do that on our end
-  locationName: {
+  location: {
     type: String,
     unique: true,
     required: false,
