@@ -1,6 +1,6 @@
 ![logo](./assets/defaultLogo.png)
-# ***Back End Repository***
-- If you're looking for the front end repository, click [HERE]((https://github.com/lets-go-geronimo/readyIMS-front-end))
+# ***Back-end Repository***
+If you're looking for the front-end repository, click [here](https://github.com/bgwest/RIMS-front-end).
 # Build Status
 In development.
 
