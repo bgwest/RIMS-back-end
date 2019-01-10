@@ -35,7 +35,7 @@ const shelfSchema = mongoose.Schema({
   items: [
     {
       type: mongoose.Schema.types.ObjectId,
-      ref: 'room',
+      ref: 'item',
     },
   ],
 });

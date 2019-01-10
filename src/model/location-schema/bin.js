@@ -2,8 +2,8 @@
 
 const mongoose = require('mongoose');
 
-const aisleSchema = mongoose.Schema({
-  aisleName: {
+const binSchema = mongoose.Schema({
+  binName: {
     type: String,
     unique: true,
     required: false,
@@ -14,10 +14,10 @@ const aisleSchema = mongoose.Schema({
       ref: 'location',
     },
   ],
-  shelves: [
+  aisles: [
     {
       type: mongoose.Schema.types.ObjectId,
-      ref: 'shelf',
+      ref: 'aisle',
     },
   ],
   rooms: [
@@ -26,10 +26,10 @@ const aisleSchema = mongoose.Schema({
       ref: 'room',
     },
   ],
-  bins: [
+  shelves: [
     {
       type: mongoose.Schema.types.ObjectId,
-      ref: 'bin',
+      ref: 'shelf',
     },
   ],
   items: [
@@ -40,4 +40,4 @@ const aisleSchema = mongoose.Schema({
   ],
 });
 
-const Aisle = module.exports = mongoose.model('aisle', aisleSchema);
+const Bin = module.exports = mongoose.model('bin', binSchema);
