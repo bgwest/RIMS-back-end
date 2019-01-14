@@ -1,6 +1,7 @@
 ![logo](./assets/defaultLogo.png)
 # ***Back-end Repository***
-If you're looking for the front-end repository, click [here](https://github.com/bgwest/RIMS-front-end).
+If you're looking for the front-end repository, click [here](https://github.com/bgwest/RIMS-front-end). \
+**note:** _If front-end link resolves to a 404, please reach out for access._
 # Build Status
 In development.
 
@@ -43,7 +44,7 @@ the application...
 5. Start the test suite by executing the ```npm run test``` command in your terminal.
 
 ___
-***Current collaborators: [Benjamin West](https://github.com/bgwest) | | [Tom North](https://github.com/tnorth93) | | [Jason Hiskey](https://github.com/jlhiskey)***
+***Current active collaborators:*** [Benjamin West](https://github.com/bgwest), [Tom North](https://github.com/tnorth93)
 ____
 
 
