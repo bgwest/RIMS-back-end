@@ -78,8 +78,11 @@ router.get('/reset-pw', basicAuthMiddleware, (request, response, next) => {
   //   - "pCreateToken"
   //   - update account
   //   - return account
-  return request.account.pUpdatePassword()
+  let newPassword = request.headers.basic2;
+  newPassword = Buffer.from(newPassword, 'base64').toString();
+  return request.account.pUpdatePassword(newPassword)
     .then((updatedAccount) => {
+      newPassword = null;
       const token = updatedAccount.tokenSeed;
       const { username, recoveryQuestion, isAdmin } = updatedAccount;
       logger.log(logger.INFO, 'Responding with a 200 status code and a TOKEN');
@@ -87,6 +90,7 @@ router.get('/reset-pw', basicAuthMiddleware, (request, response, next) => {
         token, username, recoveryQuestion, isAdmin,
       });
     }).catch((error) => {
+      newPassword = null;
       return new Error(error);
     });
 });
