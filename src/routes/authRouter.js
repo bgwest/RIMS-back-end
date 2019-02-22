@@ -50,6 +50,7 @@ router.get('/login', basicAuthMiddleware, (request, response, next) => {
   if (!request.account) {
     return next(new HttpError(401, 'AUTH | invalid request'));
   }
+  // at this point, basicAuthMiddleware has ran pValidatePassword
   return request.account.pCreateToken()
     .then((toReturn) => {
       const token = toReturn.tokenSeed;
@@ -59,7 +60,35 @@ router.get('/login', basicAuthMiddleware, (request, response, next) => {
         token, username, recoveryQuestion, isAdmin,
       });
     })
+    // this point will be skipped to if pCreateToken has failed on password validation
     .catch(next);
+});
+// ==================================================================
+// Change PW
+// ==================================================================
+router.get('/reset-pw', basicAuthMiddleware, (request, response, next) => {
+  // Step 1: Find account and validate PW
+  //   - Throw error if current PW doesn't validate
+  if (!request.account) {
+    return next(new HttpError(401, 'AUTH | invalid'));
+  }
+  // at this point, basicAuthMiddleware has ran pValidatePassword
+  // next ...
+  //   - run new hash
+  //   - "pCreateToken"
+  //   - update account
+  //   - return account
+  return request.account.pUpdatePassword()
+    .then((updatedAccount) => {
+      const token = updatedAccount.tokenSeed;
+      const { username, recoveryQuestion, isAdmin } = updatedAccount;
+      logger.log(logger.INFO, 'Responding with a 200 status code and a TOKEN');
+      return response.json({
+        token, username, recoveryQuestion, isAdmin,
+      });
+    }).catch((error) => {
+      return new Error(error);
+    });
 });
 
 // ==================================================================

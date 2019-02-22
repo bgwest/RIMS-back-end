@@ -7,6 +7,7 @@ const bcrypt = require('bcrypt');
 const HttpError = require('http-errors');
 
 const TOKEN_SEED_LENGTH = 128;
+const HASH_ROUNDS = 10;
 
 const accountSchema = mongoose.Schema({
   username: {
@@ -63,6 +64,32 @@ function pCreateToken() {
     });
 }
 
+function pUpdatePassword(newPW) {
+  return bcrypt.hash(newPW, HASH_ROUNDS)
+    .then((newHash) => {
+      // null out originally passed PW
+      newPW = null; // eslint-disable-line no-param-reassign
+      const tokenSeed = crypto.randomBytes(TOKEN_SEED_LENGTH).toString('hex');
+      this.passwordHash = newHash;
+      this.tokenSeed = tokenSeed;
+      return this.save();
+    })
+    .then((account) => {
+      const objectToSend = {};
+      objectToSend.tokenSeed = jsonWebToken.sign({
+        tokenSeed: account.tokenSeed,
+      }, process.env.APP_SECRET);
+      objectToSend.username = account.username;
+      objectToSend.recoveryQuestion = account.recoveryQuestion;
+      objectToSend.isAdmin = account.isAdmin;
+      return objectToSend;
+    })
+    .catch((error) => {
+      return new Error(error);
+    });
+  // this.passwordHash =
+}
+
 function pValidatePassword(unhashedPassword) {
   return bcrypt.compare(unhashedPassword, this.passwordHash)
     .then((compareResult) => {
@@ -76,9 +103,9 @@ function pValidatePassword(unhashedPassword) {
 
 accountSchema.methods.pCreateToken = pCreateToken;
 accountSchema.methods.pValidatePassword = pValidatePassword;
+accountSchema.methods.pUpdatePassword = pUpdatePassword;
 
 const Account = module.exports = mongoose.model('account', accountSchema);
-const HASH_ROUNDS = 10;
 
 function hashRecovery(recoveryAnswer, callback) {
   const bcryptReturn = bcrypt.hashSync(recoveryAnswer, HASH_ROUNDS);
