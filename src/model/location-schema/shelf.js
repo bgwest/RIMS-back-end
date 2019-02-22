@@ -2,19 +2,16 @@
 
 const mongoose = require('mongoose');
 
-const locationSchema = mongoose.Schema({
-  // !Tom - adding the required line in case we want to make location required later
-  // !Tom - locationName is how the customer would name their locations, not necessarily
-  //        how they are sorted under the hood. Still figuring out how to do that on our end
-  locationName: {
+const shelfSchema = mongoose.Schema({
+  shelfName: {
     type: String,
     unique: true,
     required: false,
   },
-  rooms: [
+  locations: [
     {
       type: mongoose.Schema.types.ObjectId,
-      ref: 'room',
+      ref: 'location',
     },
   ],
   aisles: [
@@ -23,10 +20,10 @@ const locationSchema = mongoose.Schema({
       ref: 'aisle',
     },
   ],
-  shelves: [
+  rooms: [
     {
       type: mongoose.Schema.types.ObjectId,
-      ref: 'shelf',
+      ref: 'room',
     },
   ],
   bins: [
@@ -43,4 +40,4 @@ const locationSchema = mongoose.Schema({
   ],
 });
 
-const Location = module.exports = mongoose.model('location', locationSchema);
+const Shelf = module.exports = mongoose.model('shelf', shelfSchema);
