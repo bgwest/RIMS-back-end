@@ -55,7 +55,7 @@ router.post('/company-logo/upload', upload.single('image'), (request, response, 
     console.log(`${originalname} saved - local dir ../../uploads/`);
   });
 
-  // { upsert: true } allows us to create the intial entry if it does not already exist
+  // { upsert: true } allows us to create the initial entry if it does not already exist
   // otherwise, image being sent will just be replaced
   // currently, this reduces complexity of managing multiple logos in the front-end
   // we can re-visit in future if needed
