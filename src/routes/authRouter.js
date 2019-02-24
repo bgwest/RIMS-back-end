@@ -63,6 +63,7 @@ router.get('/login', basicAuthMiddleware, (request, response, next) => {
     // this point will be skipped to if pCreateToken has failed on password validation
     .catch(next);
 });
+
 // ==================================================================
 // Change PW
 // ==================================================================
@@ -93,6 +94,18 @@ router.get('/reset-pw', basicAuthMiddleware, (request, response, next) => {
       newPassword = null;
       return new Error(error);
     });
+});
+
+// ==================================================================
+// Forgot pw
+// ==================================================================
+router.get('/forgot-pw', bearerAuthMiddleware, (request, response, next) => {
+  // testing wiring
+  console.log('ROUTE -- /FORGOT-PW -- HIT');
+  return response.json({
+    wiredUp: true,
+    headers: request.headers,
+  });
 });
 
 // ==================================================================
