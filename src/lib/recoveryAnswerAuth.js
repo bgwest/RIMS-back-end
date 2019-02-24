@@ -3,10 +3,7 @@
 const HttpError = require('http-errors');
 const Account = require('../model/account');
 
-// setup exports
-module.exports = {};
-
-const recoveryAnswerAuth = (request, response, next) => {
+module.exports = (request, response, next) => {
   const { username, recoveryAnswer, recoveryQuestion } = request.body;
 
   // ensure we have all we need to continue
@@ -26,5 +23,3 @@ const recoveryAnswerAuth = (request, response, next) => {
       return next(new Error(error));
     });
 };
-
-module.exports.recoveryAnswerAuth = recoveryAnswerAuth;

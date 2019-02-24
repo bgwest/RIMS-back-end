@@ -6,6 +6,7 @@ const HttpError = require('http-errors');
 
 const basicAuthMiddleware = require('../lib/basicAuthMiddleware');
 const bearerAuthMiddleware = require('../lib/bearerAuthMiddleware');
+const recoveryAnswerAuth = require('../lib/recoveryAnswerAuth');
 const Account = require('../model/account');
 const logger = require('../lib/logger');
 
@@ -99,7 +100,7 @@ router.get('/reset-pw', basicAuthMiddleware, (request, response, next) => {
 // ==================================================================
 // Forgot pw
 // ==================================================================
-router.post('/forgot-pw', jsonParser/* , bearerAuthMiddleware */, (request, response, next) => {
+router.post('/forgot-pw', jsonParser, recoveryAnswerAuth, (request, response, next) => {
   // plan
   //   -- receive user obj with username, recovery question, and recovery answer
   //   -- use username to find User Object
@@ -117,8 +118,17 @@ router.post('/forgot-pw', jsonParser/* , bearerAuthMiddleware */, (request, resp
   //   -- render new random password on screen for copy/paste to login to account and directly
   //      to a "change my password" page
 
+  // at this point -- request.body has been parsed and recoveryAnswerAuth
+  // has either found an account and returned it or username was incorrect and it rejected it
+  if (!request.account) {
+    return next(new HttpError(401, 'AUTH | invalid'));
+  }
+  // request.body = username, recoveryAnswer, recoveryQuestion
+  // return request.account.pValidateRecoveryAnswer(request.body)
+
   // testing wiring
   console.log('ROUTE -- /FORGOT-PW -- HIT');
+  console.log(request.account);
   return response.json({
     wiredUp: true,
     returnedBody: request.body,
