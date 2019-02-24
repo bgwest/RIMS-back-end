@@ -21,10 +21,16 @@ router.post('/signup', jsonParser, (request, response, next) => {
     logger.log(logger.INFO, '400 | invalid request');
     return response.sendStatus(400);
   }
+  // on-signup squash any capital letters to help users with recoveryAnswer
+  // case sensitive is another deterent but may also cause user frustration
+  // handle toLowerCase on both signup and forgot my password
+  request.body.recoveryAnswer = request.body.recoveryAnswer.toLowerCase();
   return Account.create(
     request.body.username,
     request.body.password,
     request.body.recoveryQuestion,
+    // NOTE -- need to adjust recoveryAnswer so it has at least basic base64 encoding when
+    // being sent on original signup
     request.body.recoveryAnswer,
     request.body.isAdmin,
   )

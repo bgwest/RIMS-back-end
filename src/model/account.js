@@ -118,6 +118,9 @@ function pValidateRecoveryAnswer(accountObj) {
   let { recoveryAnswer, recoveryQuestion } = accountObj; // eslint-disable-line prefer-const
   // decode recovery answer from superagent send
   recoveryAnswer = Buffer.from(recoveryAnswer, 'base64').toString();
+  // case sensitive is another deterent but may also cause user frustration
+  // handle toLowerCase on both signup and forgot my password
+  recoveryAnswer = recoveryAnswer.toLowerCase();
   return bcrypt.compare(recoveryAnswer, this.recoveryHash)
     .then((result) => {
       if (!result) {
