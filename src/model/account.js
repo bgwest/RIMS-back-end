@@ -101,9 +101,14 @@ function pValidatePassword(unhashedPassword) {
     .catch(console.error);
 }
 
+function pValidateRecoveryAnswer() {
+
+}
+
 accountSchema.methods.pCreateToken = pCreateToken;
 accountSchema.methods.pValidatePassword = pValidatePassword;
 accountSchema.methods.pUpdatePassword = pUpdatePassword;
+accountSchema.methods.pValidateRecoveryAnswer = pValidateRecoveryAnswer;
 
 const Account = module.exports = mongoose.model('account', accountSchema);
 

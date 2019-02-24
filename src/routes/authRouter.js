@@ -103,8 +103,8 @@ router.post('/forgot-pw', jsonParser/* , bearerAuthMiddleware */, (request, resp
   // plan
   //   -- receive user obj with username, recovery question, and recovery answer
   //   -- use username to find User Object
-  //   -- return User Object and test that recovery answer matches given recovery answer
-  //      with bcrypt.compare
+  //   -- return User Object
+  //   -- test that recovery answer matches given recovery answer with bcrypt.compare
   //   -- as an effort to thwart off mischief, test for user question after recovery matches
   //      and or does NOT match
   //   -- thus, even if someone happens to crack a guess a password they will also have to
