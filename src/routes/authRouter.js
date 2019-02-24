@@ -100,6 +100,23 @@ router.get('/reset-pw', basicAuthMiddleware, (request, response, next) => {
 // Forgot pw
 // ==================================================================
 router.post('/forgot-pw', jsonParser/* , bearerAuthMiddleware */, (request, response, next) => {
+  // plan
+  //   -- receive user obj with username, recovery question, and recovery answer
+  //   -- use username to find User Object
+  //   -- return User Object and test that recovery answer matches given recovery answer
+  //      with bcrypt.compare
+  //   -- as an effort to thwart off mischief, test for user question after recovery matches
+  //      and or does NOT match
+  //   -- thus, even if someone happens to crack a guess a password they will also have to
+  //      use and know the right security question used with that answer
+  //   -- may or may not be a large enhancement, but it's none the less thinking in the right
+  //      direction
+  //   -- if security answer and security question match, call another User Account Object method
+  //   -- to generate random password, change user account DB password with new random pw
+  //   -- return that random password with base 64 encryption to front-end in return json object
+  //   -- render new random password on screen for copy/paste to login to account and directly
+  //      to a "change my password" page
+
   // testing wiring
   console.log('ROUTE -- /FORGOT-PW -- HIT');
   return response.json({
