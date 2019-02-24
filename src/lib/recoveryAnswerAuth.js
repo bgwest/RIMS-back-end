@@ -13,7 +13,6 @@ module.exports = (request, response, next) => {
     return next(new HttpError(400, 'INVALID REQUEST'));
   }
 
-  const decodedAnswer = Buffer.from(recoveryAnswer, 'base64').toString();
   return Account.findOne({ username })
     .then((accountFound) => {
       request.account = accountFound;
