@@ -99,12 +99,12 @@ router.get('/reset-pw', basicAuthMiddleware, (request, response, next) => {
 // ==================================================================
 // Forgot pw
 // ==================================================================
-router.get('/forgot-pw'/* , bearerAuthMiddleware */, (request, response, next) => {
+router.post('/forgot-pw', jsonParser/* , bearerAuthMiddleware */, (request, response, next) => {
   // testing wiring
   console.log('ROUTE -- /FORGOT-PW -- HIT');
   return response.json({
     wiredUp: true,
-    headers: request.headers,
+    returnedBody: request.body,
   });
 });
 
