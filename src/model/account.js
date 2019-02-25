@@ -38,6 +38,10 @@ const accountSchema = mongoose.Schema({
   },
 });
 
+function generateRandomCharacters() {
+  return [...Array(30)].map(() => Math.random().toString(36)[3]).join('');
+}
+
 function pCreateToken() {
   this.tokenSeed = crypto.randomBytes(TOKEN_SEED_LENGTH).toString('hex');
   return this.save()
@@ -94,18 +98,12 @@ function pValidatePassword(unhashedPassword) {
   return bcrypt.compare(unhashedPassword, this.passwordHash)
     .then((compareResult) => {
       if (!compareResult) {
-        throw new HttpError(401, 'error');
+        return new HttpError(401, 'invalid account');
       }
       return this;
     })
     .catch(console.error);
 }
-
-accountSchema.methods.pCreateToken = pCreateToken;
-accountSchema.methods.pValidatePassword = pValidatePassword;
-accountSchema.methods.pUpdatePassword = pUpdatePassword;
-
-const Account = module.exports = mongoose.model('account', accountSchema);
 
 function hashRecovery(recoveryAnswer, callback) {
   const bcryptReturn = bcrypt.hashSync(recoveryAnswer, HASH_ROUNDS);
@@ -115,6 +113,42 @@ function hashRecovery(recoveryAnswer, callback) {
 function getRecoveryHash(recoveryHash) {
   return recoveryHash;
 }
+
+function pValidateRecoveryAnswer(accountObj) {
+  let { recoveryAnswer, recoveryQuestion } = accountObj; // eslint-disable-line prefer-const
+  // decode recovery answer from superagent send
+  recoveryAnswer = Buffer.from(recoveryAnswer, 'base64').toString();
+  // case sensitive is another deterent but may also cause user frustration
+  // handle toLowerCase on both signup and forgot my password
+  recoveryAnswer = recoveryAnswer.toLowerCase();
+  return bcrypt.compare(recoveryAnswer, this.recoveryHash)
+    .then((result) => {
+      if (!result) {
+        return new HttpError(401, 'invalid account');
+      } // else ... if recovery answers do match
+      // compare account questions
+      if (this.recoveryQuestion !== recoveryQuestion) {
+        return new HttpError(401, 'invalid account');
+      }
+      // if account questions DO match, generate new PW for account to return
+      let tempPassword = generateRandomCharacters();
+      const hashTempPassword = hashRecovery(tempPassword, getRecoveryHash);
+      this.passwordHash = hashTempPassword;
+      this.save();
+      tempPassword = Buffer.from(tempPassword).toString('base64');
+      return tempPassword;
+    })
+    .catch((error) => {
+      return error;
+    });
+}
+
+accountSchema.methods.pCreateToken = pCreateToken;
+accountSchema.methods.pValidatePassword = pValidatePassword;
+accountSchema.methods.pUpdatePassword = pUpdatePassword;
+accountSchema.methods.pValidateRecoveryAnswer = pValidateRecoveryAnswer;
+
+const Account = module.exports = mongoose.model('account', accountSchema);
 
 Account.create = (username, password, recoveryQuestion, recoveryAnswer, isAdmin) => {
   const recoveryHash = hashRecovery(recoveryAnswer, getRecoveryHash);
