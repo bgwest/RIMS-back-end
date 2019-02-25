@@ -2,6 +2,8 @@
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const logger = require('../lib/logger');
+const handleRequestingUser = require('../lib/handleRequestingUser');
 
 // const bearerAuthMiddleware = require('../lib/bearerAuthMiddleware');
 const Account = require('../model/account');
@@ -27,8 +29,16 @@ const runUserQuery = (callback) => {
 
 // bearerAuthMiddleware, jsonParser, (request, response, next)
 // NOTE: need additional validation to ensure only admin can do this...
-router.get('/accounts', jsonParser, (request, response, next) => { // eslint-disable-line
+router.get('/accounts', jsonParser, handleRequestingUser, (request, response, next) => { // eslint-disable-line
   // return all users in db
+  console.log('request.headers for /accounts route:');
+  console.log(request.headers);
+  if (!request.arbitrary) {
+    logger.log(logger.INFO, '400 | invalid request');
+    return response.sendStatus(400);
+  } // else, if middleware added arbitrary value
+  console.log('inside /accounts -- request.arbitrary');
+  console.log(request.arbitrary);
   let query = runUserQuery((callback, error) => { // eslint-disable-line
     // console.log('error');
     // console.log(error);
