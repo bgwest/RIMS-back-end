@@ -56,6 +56,7 @@ function pCreateToken() {
       handOff.username = account.username;
       handOff.recoveryQuestion = account.recoveryQuestion;
       handOff.isAdmin = account.isAdmin;
+      handOff.accountType = account.accountType;
       return handOff;
     })
     .then((parsedAccount) => {
@@ -66,6 +67,7 @@ function pCreateToken() {
       objectToSend.username = parsedAccount.username;
       objectToSend.recoveryQuestion = parsedAccount.recoveryQuestion;
       objectToSend.isAdmin = parsedAccount.isAdmin;
+      objectToSend.accountType = parsedAccount.accountType;
       return objectToSend;
     })
     .catch((error) => {
@@ -155,7 +157,7 @@ accountSchema.methods.pValidateRecoveryAnswer = pValidateRecoveryAnswer;
 
 const Account = module.exports = mongoose.model('account', accountSchema);
 
-Account.create = (username, password, recoveryQuestion, recoveryAnswer, isAdmin) => {
+Account.create = (username, password, recoveryQuestion, recoveryAnswer, isAdmin, accountType) => {
   const recoveryHash = hashRecovery(recoveryAnswer, getRecoveryHash);
   return bcrypt.hash(password, HASH_ROUNDS)
     .then((passwordHash) => {
@@ -169,6 +171,7 @@ Account.create = (username, password, recoveryQuestion, recoveryAnswer, isAdmin)
         recoveryHash,
         isAdmin,
         recoveryQuestion,
+        accountType,
       }).save();
     });
 };
