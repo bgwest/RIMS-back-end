@@ -81,10 +81,12 @@ router.get('/login', basicAuthMiddleware, (request, response, next) => {
   return request.account.pCreateToken()
     .then((toReturn) => {
       const token = toReturn.tokenSeed;
-      const { username, recoveryQuestion, isAdmin } = toReturn;
+      const {
+        username, recoveryQuestion, isAdmin, accountType,
+      } = toReturn;
       logger.log(logger.INFO, 'Responding with a 200 status code and a TOKEN');
       return response.json({
-        token, username, recoveryQuestion, isAdmin,
+        token, username, recoveryQuestion, isAdmin, accountType,
       });
     })
     // this point will be skipped to if pCreateToken has failed on password validation
@@ -164,10 +166,12 @@ router.get('/token-auth', bearerAuthMiddleware, (request, response, next) => {
   return request.account.pCreateToken()
     .then((toReturn) => {
       const token = toReturn.tokenSeed;
-      const { username, recoveryQuestion, isAdmin } = toReturn;
+      const {
+        username, recoveryQuestion, isAdmin, accountType, 
+      } = toReturn;
       logger.log(logger.INFO, 'Responding with a 200 status code and a TOKEN');
       return response.json({
-        token, username, recoveryQuestion, isAdmin,
+        token, username, recoveryQuestion, isAdmin, accountType,
       });
     })
     .catch(next);
