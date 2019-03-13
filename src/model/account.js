@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const crypto = require('crypto');
 const jsonWebToken = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const perms = require('../model/access/perms/perms');
 const HttpError = require('http-errors');
 
 const TOKEN_SEED_LENGTH = 128;
@@ -14,6 +15,10 @@ const accountSchema = mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+  },
+  accountType: {
+    type: Object,
+    required: true,
   },
   tokenSeed: {
     type: String,
