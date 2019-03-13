@@ -10,4 +10,8 @@ module.exports = {
   viewerPerms: {
     read: true,
   },
+  // something went unexpected -- use to toggle login rejection
+  error: {
+    read: false,
+  },
 };
