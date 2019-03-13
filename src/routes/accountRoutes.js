@@ -32,16 +32,10 @@ const runUserQuery = (callback) => {
 // bearerAuthMiddleware, jsonParser, (request, response, next)
 // NOTE: need additional validation to ensure only admin can do this...
 router.get('/accounts', jsonParser, handleRequestingUser, getAFAH, (request, response, next) => { // eslint-disable-line
-  console.log('request.headers for /accounts route:');
-  console.log(request.headers);
   if (!request.arbitrary && !request.account) {
     logger.log(logger.INFO, '400 | invalid request');
     return response.sendStatus(400);
   } // else, if middleware added arbitrary value
-  console.log('inside /accounts -- request.arbitrary');
-  console.log(request.arbitrary);
-  console.log('inside /accounts -- request.account');
-  console.log(request.account);
   // return all users in db
   let query = runUserQuery((callback, error) => { // eslint-disable-line
     // console.log('error');
