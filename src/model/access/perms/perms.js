@@ -2,7 +2,7 @@
 
 module.exports = {
   adminPerms: {
-    create: { sudo: true },
+    sudo: true,
   },
   editorPerms: {
     create: true, update: true, read: true,
