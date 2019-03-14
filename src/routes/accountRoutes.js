@@ -50,6 +50,6 @@ router.get('/accounts', jsonParser, handleRequestingUser, getAFAH, (request, res
   // the delete buttons
 });
 
-router.get('/perms', jsonParser, (request, response, next) => {
+router.get('/roles', jsonParser, (request, response, next) => {
   return response.json({ roles });
 });
