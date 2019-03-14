@@ -51,5 +51,5 @@ router.get('/accounts', jsonParser, handleRequestingUser, getAFAH, (request, res
 });
 
 router.get('/roles', jsonParser, (request, response, next) => {
-  return response.json({ roles });
+  return response.json(roles);
 });
