@@ -6,6 +6,7 @@ const logger = require('../lib/logger');
 const handleRequestingUser = require('../lib/handleRequestingUser');
 // long name so shortened for readability
 const getAFAH = require('../lib/getAccountFromArbitraryHeader');
+const roles = require('../model/access/roles/roles');
 
 // const bearerAuthMiddleware = require('../lib/bearerAuthMiddleware');
 const Account = require('../model/account');
@@ -47,4 +48,8 @@ router.get('/accounts', jsonParser, handleRequestingUser, getAFAH, (request, res
   // needs additional error handling but commit this base query for now
   // front end should be able to receive this json and populate user list with
   // the delete buttons
+});
+
+router.get('/perms', jsonParser, (request, response, next) => {
+  return response.json({ roles });
 });
