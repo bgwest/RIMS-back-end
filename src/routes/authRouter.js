@@ -9,6 +9,7 @@ const bearerAuthMiddleware = require('../lib/bearerAuthMiddleware');
 const recoveryAnswerAuth = require('../lib/recoveryAnswerAuth');
 const Account = require('../model/account');
 const logger = require('../lib/logger');
+const roles = require('../model/access/roles/roles');
 
 const jsonParser = bodyParser.json();
 const router = module.exports = new express.Router();
@@ -25,6 +26,24 @@ router.post('/signup', jsonParser, (request, response, next) => {
   // case sensitive is another deterent but may also cause user frustration
   // handle toLowerCase on both signup and forgot my password
   request.body.recoveryAnswer = request.body.recoveryAnswer.toLowerCase();
+
+  // handle intial roles perms toggle
+  // if isAdmin = true, apply sudo type
+  // if ~admin, apply reader (viewer) type
+  // only admin can grant writer type and therefore writer can only be applied
+  // via front-end admin menu
+  if (request.body.isAdmin) {
+    request.body.accountType = roles.admin;
+  } else if (!request.body.isAdmin) {
+    request.body.accountType = roles.viewer;
+  } else if (!request.body.isAdmin && request.body.accountType === roles.editor) {
+    // this is sort of redundant... but wanted to flesh out full logic explicitly
+    request.body.accountType = roles.editor;
+  } else {
+    // something went unexpected -- use to toggle login rejection
+    request.body.accountType = roles.error;
+  }
+
   return Account.create(
     request.body.username,
     request.body.password,
@@ -33,6 +52,7 @@ router.post('/signup', jsonParser, (request, response, next) => {
     // being sent on original signup
     request.body.recoveryAnswer,
     request.body.isAdmin,
+    request.body.accountType,
   )
     .then((account) => {
       delete request.body.password;
@@ -41,10 +61,12 @@ router.post('/signup', jsonParser, (request, response, next) => {
     })
     .then((toReturn) => {
       const token = toReturn.tokenSeed;
-      const { username, recoveryQuestion, isAdmin } = toReturn;
+      const {
+        username, recoveryQuestion, isAdmin, accountType, 
+      } = toReturn;
       logger.log(logger.INFO, 'Responding with a 200 status code and a TOKEN');
       return response.json({
-        token, username, recoveryQuestion, isAdmin,
+        token, username, recoveryQuestion, isAdmin, accountType,
       });
     })
     .catch(next);
@@ -61,10 +83,12 @@ router.get('/login', basicAuthMiddleware, (request, response, next) => {
   return request.account.pCreateToken()
     .then((toReturn) => {
       const token = toReturn.tokenSeed;
-      const { username, recoveryQuestion, isAdmin } = toReturn;
+      const {
+        username, recoveryQuestion, isAdmin, accountType,
+      } = toReturn;
       logger.log(logger.INFO, 'Responding with a 200 status code and a TOKEN');
       return response.json({
-        token, username, recoveryQuestion, isAdmin,
+        token, username, recoveryQuestion, isAdmin, accountType,
       });
     })
     // this point will be skipped to if pCreateToken has failed on password validation
@@ -144,10 +168,12 @@ router.get('/token-auth', bearerAuthMiddleware, (request, response, next) => {
   return request.account.pCreateToken()
     .then((toReturn) => {
       const token = toReturn.tokenSeed;
-      const { username, recoveryQuestion, isAdmin } = toReturn;
+      const {
+        username, recoveryQuestion, isAdmin, accountType, 
+      } = toReturn;
       logger.log(logger.INFO, 'Responding with a 200 status code and a TOKEN');
       return response.json({
-        token, username, recoveryQuestion, isAdmin,
+        token, username, recoveryQuestion, isAdmin, accountType,
       });
     })
     .catch(next);
