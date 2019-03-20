@@ -6,8 +6,10 @@ const HttpError = require('http-errors');
 
 const basicAuthMiddleware = require('../lib/basicAuthMiddleware');
 const bearerAuthMiddleware = require('../lib/bearerAuthMiddleware');
+const recoveryAnswerAuth = require('../lib/recoveryAnswerAuth');
 const Account = require('../model/account');
 const logger = require('../lib/logger');
+const roles = require('../model/access/roles/roles');
 
 const jsonParser = bodyParser.json();
 const router = module.exports = new express.Router();
@@ -20,12 +22,37 @@ router.post('/signup', jsonParser, (request, response, next) => {
     logger.log(logger.INFO, '400 | invalid request');
     return response.sendStatus(400);
   }
+  // on-signup squash any capital letters to help users with recoveryAnswer
+  // case sensitive is another deterent but may also cause user frustration
+  // handle toLowerCase on both signup and forgot my password
+  request.body.recoveryAnswer = request.body.recoveryAnswer.toLowerCase();
+
+  // handle intial roles perms toggle
+  // if isAdmin = true, apply sudo type
+  // if ~admin, apply reader (viewer) type
+  // only admin can grant writer type and therefore writer can only be applied
+  // via front-end admin menu
+  if (request.body.isAdmin) {
+    request.body.accountType = roles.admin;
+  } else if (!request.body.isAdmin) {
+    request.body.accountType = roles.viewer;
+  } else if (!request.body.isAdmin && request.body.accountType === roles.editor) {
+    // this is sort of redundant... but wanted to flesh out full logic explicitly
+    request.body.accountType = roles.editor;
+  } else {
+    // something went unexpected -- use to toggle login rejection
+    request.body.accountType = roles.error;
+  }
+
   return Account.create(
     request.body.username,
     request.body.password,
     request.body.recoveryQuestion,
+    // NOTE -- need to adjust recoveryAnswer so it has at least basic base64 encoding when
+    // being sent on original signup
     request.body.recoveryAnswer,
     request.body.isAdmin,
+    request.body.accountType,
   )
     .then((account) => {
       delete request.body.password;
@@ -34,10 +61,12 @@ router.post('/signup', jsonParser, (request, response, next) => {
     })
     .then((toReturn) => {
       const token = toReturn.tokenSeed;
-      const { username, recoveryQuestion, isAdmin } = toReturn;
+      const {
+        username, recoveryQuestion, isAdmin, accountType, 
+      } = toReturn;
       logger.log(logger.INFO, 'Responding with a 200 status code and a TOKEN');
       return response.json({
-        token, username, recoveryQuestion, isAdmin,
+        token, username, recoveryQuestion, isAdmin, accountType,
       });
     })
     .catch(next);
@@ -54,15 +83,18 @@ router.get('/login', basicAuthMiddleware, (request, response, next) => {
   return request.account.pCreateToken()
     .then((toReturn) => {
       const token = toReturn.tokenSeed;
-      const { username, recoveryQuestion, isAdmin } = toReturn;
+      const {
+        username, recoveryQuestion, isAdmin, accountType,
+      } = toReturn;
       logger.log(logger.INFO, 'Responding with a 200 status code and a TOKEN');
       return response.json({
-        token, username, recoveryQuestion, isAdmin,
+        token, username, recoveryQuestion, isAdmin, accountType,
       });
     })
     // this point will be skipped to if pCreateToken has failed on password validation
     .catch(next);
 });
+
 // ==================================================================
 // Change PW
 // ==================================================================
@@ -96,6 +128,37 @@ router.get('/reset-pw', basicAuthMiddleware, (request, response, next) => {
 });
 
 // ==================================================================
+// Forgot pw
+// ==================================================================
+router.post('/forgot-pw', jsonParser, recoveryAnswerAuth, (request, response, next) => {
+  // steps
+  //   1. receive user obj with username, recovery question, and recovery answer
+  //   2. use username to find User Object
+  //   3. return User Object
+  //   4. test that recovery answer matches given recovery answer with bcrypt.compare
+  //   5. if security answer and security question match, generate random password
+  //   6. update user account schema with the new random pw
+  //   7. return that random password with base 64 encryption to front-end in return json object
+  //   8. render new random password on screen for copy/paste to login to account and directly
+  //      to a "change my password" page
+
+  // at this point -- request.body has been parsed and recoveryAnswerAuth
+  // has either found an account and returned it or username was incorrect and it rejected it
+  if (!request.account) {
+    return next(new HttpError(401, 'AUTH | invalid'));
+  }
+  // request.body = username, recoveryAnswer, recoveryQuestion
+  return request.account.pValidateRecoveryAnswer(request.body)
+    .then((temporaryPassword) => {
+      // if successful
+      return response.json({ temporaryPassword });
+    })
+    .catch((error) => {
+      return next(error);
+    });
+});
+
+// ==================================================================
 // token auth
 // ==================================================================
 router.get('/token-auth', bearerAuthMiddleware, (request, response, next) => {
@@ -105,10 +168,12 @@ router.get('/token-auth', bearerAuthMiddleware, (request, response, next) => {
   return request.account.pCreateToken()
     .then((toReturn) => {
       const token = toReturn.tokenSeed;
-      const { username, recoveryQuestion, isAdmin } = toReturn;
+      const {
+        username, recoveryQuestion, isAdmin, accountType, 
+      } = toReturn;
       logger.log(logger.INFO, 'Responding with a 200 status code and a TOKEN');
       return response.json({
-        token, username, recoveryQuestion, isAdmin,
+        token, username, recoveryQuestion, isAdmin, accountType,
       });
     })
     .catch(next);

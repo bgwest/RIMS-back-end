@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const crypto = require('crypto');
 const jsonWebToken = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const perms = require('../model/access/perms/perms');
 const HttpError = require('http-errors');
 
 const TOKEN_SEED_LENGTH = 128;
@@ -14,6 +15,10 @@ const accountSchema = mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+  },
+  accountType: {
+    type: Object,
+    required: true,
   },
   tokenSeed: {
     type: String,
@@ -38,6 +43,10 @@ const accountSchema = mongoose.Schema({
   },
 });
 
+function generateRandomCharacters() {
+  return [...Array(30)].map(() => Math.random().toString(36)[3]).join('');
+}
+
 function pCreateToken() {
   this.tokenSeed = crypto.randomBytes(TOKEN_SEED_LENGTH).toString('hex');
   return this.save()
@@ -47,6 +56,7 @@ function pCreateToken() {
       handOff.username = account.username;
       handOff.recoveryQuestion = account.recoveryQuestion;
       handOff.isAdmin = account.isAdmin;
+      handOff.accountType = account.accountType;
       return handOff;
     })
     .then((parsedAccount) => {
@@ -57,6 +67,7 @@ function pCreateToken() {
       objectToSend.username = parsedAccount.username;
       objectToSend.recoveryQuestion = parsedAccount.recoveryQuestion;
       objectToSend.isAdmin = parsedAccount.isAdmin;
+      objectToSend.accountType = parsedAccount.accountType;
       return objectToSend;
     })
     .catch((error) => {
@@ -94,18 +105,12 @@ function pValidatePassword(unhashedPassword) {
   return bcrypt.compare(unhashedPassword, this.passwordHash)
     .then((compareResult) => {
       if (!compareResult) {
-        throw new HttpError(401, 'error');
+        return new HttpError(401, 'invalid account');
       }
       return this;
     })
     .catch(console.error);
 }
-
-accountSchema.methods.pCreateToken = pCreateToken;
-accountSchema.methods.pValidatePassword = pValidatePassword;
-accountSchema.methods.pUpdatePassword = pUpdatePassword;
-
-const Account = module.exports = mongoose.model('account', accountSchema);
 
 function hashRecovery(recoveryAnswer, callback) {
   const bcryptReturn = bcrypt.hashSync(recoveryAnswer, HASH_ROUNDS);
@@ -116,7 +121,43 @@ function getRecoveryHash(recoveryHash) {
   return recoveryHash;
 }
 
-Account.create = (username, password, recoveryQuestion, recoveryAnswer, isAdmin) => {
+function pValidateRecoveryAnswer(accountObj) {
+  let { recoveryAnswer, recoveryQuestion } = accountObj; // eslint-disable-line prefer-const
+  // decode recovery answer from superagent send
+  recoveryAnswer = Buffer.from(recoveryAnswer, 'base64').toString();
+  // case sensitive is another deterent but may also cause user frustration
+  // handle toLowerCase on both signup and forgot my password
+  recoveryAnswer = recoveryAnswer.toLowerCase();
+  return bcrypt.compare(recoveryAnswer, this.recoveryHash)
+    .then((result) => {
+      if (!result) {
+        return new HttpError(401, 'invalid account');
+      } // else ... if recovery answers do match
+      // compare account questions
+      if (this.recoveryQuestion !== recoveryQuestion) {
+        return new HttpError(401, 'invalid account');
+      }
+      // if account questions DO match, generate new PW for account to return
+      let tempPassword = generateRandomCharacters();
+      const hashTempPassword = hashRecovery(tempPassword, getRecoveryHash);
+      this.passwordHash = hashTempPassword;
+      this.save();
+      tempPassword = Buffer.from(tempPassword).toString('base64');
+      return tempPassword;
+    })
+    .catch((error) => {
+      return error;
+    });
+}
+
+accountSchema.methods.pCreateToken = pCreateToken;
+accountSchema.methods.pValidatePassword = pValidatePassword;
+accountSchema.methods.pUpdatePassword = pUpdatePassword;
+accountSchema.methods.pValidateRecoveryAnswer = pValidateRecoveryAnswer;
+
+const Account = module.exports = mongoose.model('account', accountSchema);
+
+Account.create = (username, password, recoveryQuestion, recoveryAnswer, isAdmin, accountType) => {
   const recoveryHash = hashRecovery(recoveryAnswer, getRecoveryHash);
   return bcrypt.hash(password, HASH_ROUNDS)
     .then((passwordHash) => {
@@ -130,6 +171,7 @@ Account.create = (username, password, recoveryQuestion, recoveryAnswer, isAdmin)
         recoveryHash,
         isAdmin,
         recoveryQuestion,
+        accountType,
       }).save();
     });
 };
